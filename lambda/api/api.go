@@ -30,7 +30,7 @@ func (api ApiHandler) RegisterUserHandler(event types.RegisterUser) error {
 		return fmt.Errorf("The user does already exist with that username")
 	}
 
-	//we know that a user does not exist in the system
+	//we know that a user does not exist in the system.
 	err = api.dbStore.InsertUser(event)
 	if err != nil {
 		return fmt.Errorf("Something happened registering the user, error: %w", err)
