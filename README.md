@@ -1,53 +1,79 @@
-# 🚀 AWS CDK Go Project (Lambda-Based)
+# AWS Account Handler
 
-This project is built with the [AWS Cloud Development Kit (CDK)](https://docs.aws.amazon.com/cdk/latest/guide/home.html) using **Go**.  
-It demonstrates how to define and deploy AWS infrastructure as code, focusing on a **serverless Lambda-based architecture**.
+This project is a serverless, Lambda-based AWS account handler built using the AWS Cloud Development Kit (CDK) in Go. It allows you to define and manage your AWS infrastructure as code.
 
-The `cdk.json` file tells the CDK toolkit how to run your application.
+## Features
 
----
+* **Infrastructure as Code**: Define your AWS resources using familiar programming languages (Go).
+* **Serverless Architecture**: Leverages AWS Lambda for efficient, event-driven execution.
+* **AWS CDK**: Utilizes the AWS Cloud Development Kit for robust infrastructure provisioning.
 
-## 📂 Project Structure
+## Project Structure
 
-- **/cmd/** – Main entry points for your Lambda functions written in Go  
-- **/pkg/** – Reusable Go packages (business logic, helpers, etc.)  
-- **/infrastructure/** – CDK stack definitions (infrastructure as code)  
-- **cdk.json** – CDK execution configuration  
-- **go.mod / go.sum** – Go dependencies  
+The repository is organized as follows:
 
----
+* `/cmd/`: Contains the entry points for the Go Lambda functions.
+* `/pkg/`: Houses reusable Go packages.
+* `/infrastructure/`: Defines the AWS CDK stacks and constructs for your infrastructure.
+* `cdk.json`: Configuration file for the AWS CDK.
+* `go.mod` and `go.sum`: Go module and checksum files for dependency management.
 
-## 🔧 Prerequisites
+## Prerequisites
 
-Before you begin, make sure you have the following installed:
+Before you can work with this project, ensure you have the following installed:
 
-- [Go](https://go.dev/dl/) (≥1.19 recommended)  
-- [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) (≥2.x)  
-- [AWS CLI](https://docs.aws.amazon.com/cli/) configured with credentials  
+* **Go**: Version 1.19 or higher.
+* **AWS CDK**: Version 2.x or higher.
+* **AWS CLI**: Installed and configured with appropriate AWS credentials.
 
----
+## Getting Started
 
-## 🛠️ Useful Commands
+### Installation
 
-| Command            | Description |
-|--------------------|-------------|
-| `cdk bootstrap`    | Prepare your AWS environment for CDK deployments |
-| `cdk synth`        | Generate the CloudFormation template |
-| `cdk diff`         | Compare deployed stack with local state |
-| `cdk deploy`       | Deploy the stack to your AWS account/region |
-| `cdk destroy`      | Remove the deployed stack |
-| `go test ./...`    | Run unit tests across all packages |
+1.  **Clone the repository**:
+    ```bash
+    git clone [https://github.com/Sebjen0209/aws-account-handler.git](https://github.com/Sebjen0209/aws-account-handler.git)
+    cd aws-account-handler
+    ```
 
----
+2.  **Install Go dependencies**:
+    ```bash
+    go mod tidy
+    ```
 
-## 📝 Development Workflow
+### Useful Commands
 
-1. **Write Infrastructure**  
-   Define resources in the `/infrastructure` directory using CDK and Go.
+* **Bootstrap AWS CDK**: Prepares your AWS account and bootstrap environment.
+    ```bash
+    cdk bootstrap
+    ```
 
-2. **Implement Lambda Functions**  
-   Add your Go code for Lambda functions under `/cmd`.
+* **Synthesize CloudFormation templates**: Generates the CloudFormation templates from your CDK code.
+    ```bash
+    cdk synth
+    ```
 
-3. **Build Lambda Binaries**  
-   ```bash
-   GOOS=linux GOARCH=amd64 go build -o main cmd/your_lambda/main.go
+* **Deploy to AWS**: Deploys your infrastructure to your AWS account.
+    ```bash
+    cdk deploy
+    ```
+
+* **Build Lambda binaries**: Compiles the Go Lambda functions into executable binaries.
+    ```bash
+    # Example for a specific Lambda function (adjust as needed)
+    GOOS=linux GOARCH=amd64 go build -o ./bin/my-lambda-function ./cmd/my-lambda-function/main.go
+    ```
+    *(Note: Specific build commands for each Lambda function might vary based on your project's needs. You might integrate this into your CDK deployment process).*
+
+* **Run Unit Tests**: Executes all unit tests in the project.
+    ```bash
+    go test ./...
+    ```
+
+## Contributing
+
+Contributions are welcome! Please refer to the contribution guidelines (if available) or open an issue/pull request on GitHub.
+
+## License
+
+This project is licensed under the [MIT License] (LICENSE).
