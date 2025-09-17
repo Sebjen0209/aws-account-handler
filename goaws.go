@@ -5,60 +5,65 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsapigateway"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsdynamodb"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
-
-	// "github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
 
-type GoawsStackProps struct {
+type Take2GoCdkStackProps struct {
 	awscdk.StackProps
 }
 
-func NewGoawsStack(scope constructs.Construct, id string, props *GoawsStackProps) awscdk.Stack {
+func NewTake2GoCdkStack(scope constructs.Construct, id string, props *Take2GoCdkStackProps) awscdk.Stack {
 	var sprops awscdk.StackProps
 	if props != nil {
 		sprops = props.StackProps
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	//make new Dynamo Table
-	table := awsdynamodb.NewTable(stack, jsii.String("myUserTable"), &awsdynamodb.TableProps{
+	table := awsdynamodb.NewTable(stack, jsii.String("myUserTable2"), &awsdynamodb.TableProps{
 		PartitionKey: &awsdynamodb.Attribute{
 			Name: jsii.String("username"),
 			Type: awsdynamodb.AttributeType_STRING,
 		},
-		TableName: jsii.String("userTable"),
+		TableName: jsii.String("userTable2"),
 	})
 
-	myFunction := awslambda.NewFunction(stack, jsii.String("myLambdaFunction"), &awslambda.FunctionProps{
+	// define our lambda here
+	myFunction := awslambda.NewFunction(stack, jsii.String("myLambdaFunction2"), &awslambda.FunctionProps{
 		Runtime: awslambda.Runtime_PROVIDED_AL2023(),
 		Code:    awslambda.AssetCode_FromAsset(jsii.String("lambda/function.zip"), nil),
 		Handler: jsii.String("main"),
 	})
 
-	table.GrantReadWriteData(myFunction)
-
-	api := awsapigateway.NewRestApi(stack, jsii.String("myAPIGateway"), &awsapigateway.RestApiProps{
+	// define our api gateway
+	api := awsapigateway.NewRestApi(stack, jsii.String("myAPIGateway2"), &awsapigateway.RestApiProps{
 		DefaultCorsPreflightOptions: &awsapigateway.CorsOptions{
 			AllowHeaders: jsii.Strings("Content-Type", "Authorization"),
-			AllowMethods: jsii.Strings("GET", "PUT", "DELETE", "OPTIONS", "POST"),
+			AllowMethods: jsii.Strings("GET", "POST", "DELETE", "PUT", "OPTIONS"),
 			AllowOrigins: jsii.Strings("*"),
 		},
 		DeployOptions: &awsapigateway.StageOptions{
 			LoggingLevel: awsapigateway.MethodLoggingLevel_INFO,
 		},
-		CloudWatchRole: jsii.Bool(true),
+		EndpointConfiguration: &awsapigateway.EndpointConfiguration{
+			Types: &[]awsapigateway.EndpointType{awsapigateway.EndpointType_REGIONAL},
+		},
 	})
 
+	// integrate the routes + methods to this endpoint
 	integration := awsapigateway.NewLambdaIntegration(myFunction, nil)
 
-	//Define routes
-	registerResource := api.Root().AddResource(jsii.String("register"), nil)
-	registerResource.AddMethod(jsii.String("POST"), integration, nil)
+	registerRoute := api.Root().AddResource(jsii.String("register"), nil)
+	registerRoute.AddMethod(jsii.String("POST"), integration, nil)
 
-	loginResource := api.Root().AddResource(jsii.String("login"), nil)
-	loginResource.AddMethod(jsii.String("POST"), integration, nil)
+	loginRoute := api.Root().AddResource(jsii.String("login"), nil)
+	loginRoute.AddMethod(jsii.String("POST"), integration, nil)
+
+	protectedRoute := api.Root().AddResource(jsii.String("protected"), nil)
+	protectedRoute.AddMethod(jsii.String("GET"), integration, nil)
+
+	table.GrantReadWriteData(myFunction)
+
 	return stack
 }
 
@@ -67,7 +72,7 @@ func main() {
 
 	app := awscdk.NewApp(nil)
 
-	NewGoawsStack(app, "GoawsStack", &GoawsStackProps{
+	NewTake2GoCdkStack(app, "Take2GoCdkStack", &Take2GoCdkStackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},
@@ -76,8 +81,6 @@ func main() {
 	app.Synth(nil)
 }
 
-// env determines the AWS environment (account+region) in which our stack is to
-// be deployed. For more information see: https://docs.aws.amazon.com/cdk/latest/guide/environments.html
 func env() *awscdk.Environment {
 	return nil
 }
