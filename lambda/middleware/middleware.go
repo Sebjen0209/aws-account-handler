@@ -67,12 +67,13 @@ func extractTokenFromHeaders(headers map[string]string) string {
 
 func parseToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		secret := "mySecret"
+		// Ensure the secret matches the one used during token generation
+		secret := "secret"
 		return []byte(secret), nil
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("unauthorized")
+		return nil, fmt.Errorf("unauthorized: %v", err)
 	}
 
 	if !token.Valid {
@@ -85,5 +86,4 @@ func parseToken(tokenString string) (jwt.MapClaims, error) {
 	}
 
 	return claims, nil
-
 }
