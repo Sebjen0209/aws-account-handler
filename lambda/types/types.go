@@ -8,6 +8,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Where we can define types and other misc. functions
+
 type RegisterUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -23,6 +25,7 @@ func NewUser(registerUser RegisterUser) (User, error) {
 	if err != nil {
 		return User{}, err
 	}
+
 	return User{
 		Username:     registerUser.Username,
 		PasswordHash: string(hashedPassword),
@@ -31,7 +34,6 @@ func NewUser(registerUser RegisterUser) (User, error) {
 
 func ValidatePassword(hashedPassword, plainTextPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainTextPassword))
-
 	return err == nil
 }
 
@@ -44,14 +46,14 @@ func CreateToken(user User) string {
 		"expires": validUntil,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	// Use a shared secret for HMAC signing
-	secret := "secret"
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims, nil)
+
+	secret := "mySecret"
 
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		fmt.Printf("Error signing token: %v\n", err) // Log the error for debugging
-		return ""
+		fmt.Errorf("signingString error %w", err)
+		return tokenString
 	}
 
 	return tokenString

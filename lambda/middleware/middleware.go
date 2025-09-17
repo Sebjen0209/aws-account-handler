@@ -1,9 +1,5 @@
 package middleware
 
-//extracting the request headers
-//extracting our claims
-//valdating everything
-
 import (
 	"fmt"
 	"net/http"
@@ -13,8 +9,6 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-//inspiration from: https://medium.com/@cheickzida/golang-implementing-jwt-token-authentication-bba9bfd84d60
 
 func ValidateJWTMiddleware(next func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)) func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	return func(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -52,6 +46,7 @@ func ValidateJWTMiddleware(next func(request events.APIGatewayProxyRequest) (eve
 
 func extractTokenFromHeaders(headers map[string]string) string {
 	authHeader, ok := headers["Authorization"]
+
 	if !ok {
 		return ""
 	}
@@ -65,29 +60,24 @@ func extractTokenFromHeaders(headers map[string]string) string {
 }
 
 func parseToken(tokenString string) (jwt.MapClaims, error) {
-	fmt.Printf("Parsing token: %s\n", tokenString) // Log the token
-
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		secret := "secret"
+		secret := "mySecret"
 		return []byte(secret), nil
 	})
 
 	if err != nil {
-		fmt.Printf("Error parsing token: %v\n", err)
-		return nil, fmt.Errorf("unauthorized: %v", err)
+		return nil, fmt.Errorf("unauthorized")
 	}
 
 	if !token.Valid {
-		fmt.Println("Token is not valid")
 		return nil, fmt.Errorf("token is not valid - unauthorized")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		fmt.Println("Token claims are not of type MapClaims")
 		return nil, fmt.Errorf("token of unrecognized type - unauthorized")
 	}
 
-	fmt.Printf("Token claims: %v\n", claims) // Log the claims
 	return claims, nil
+
 }

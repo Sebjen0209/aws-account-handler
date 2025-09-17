@@ -93,7 +93,7 @@ func (api *ApiHandler) LoginUser(request events.APIGatewayProxyRequest) (events.
 	err := json.Unmarshal([]byte(request.Body), &loginRequest)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
-			Body:       "Invalid request",
+			Body:       "invalid request",
 			StatusCode: http.StatusBadRequest,
 		}, err
 	}
@@ -113,11 +113,9 @@ func (api *ApiHandler) LoginUser(request events.APIGatewayProxyRequest) (events.
 		}, nil
 	}
 
-	// Generate access token
 	accessToken := types.CreateToken(user)
 	successMsg := fmt.Sprintf(`{"access_token": "%s"}`, accessToken)
 
-	// Return the access token in the response
 	return events.APIGatewayProxyResponse{
 		Body:       successMsg,
 		StatusCode: http.StatusOK,
