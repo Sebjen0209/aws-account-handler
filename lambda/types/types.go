@@ -44,14 +44,14 @@ func CreateToken(user User) string {
 		"expires": validUntil,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims, nil)
-	//ændre til AWS secrets senere, eller .env fil
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Use a shared secret for HMAC signing
 	secret := "secret"
 
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		fmt.Errorf("signingString error %w", err)
-		return tokenString
+		fmt.Printf("Error signing token: %v\n", err) // Log the error for debugging
+		return ""
 	}
 
 	return tokenString
