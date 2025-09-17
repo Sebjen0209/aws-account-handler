@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -47,10 +48,11 @@ func CreateToken(user User) string {
 	//ændre til AWS secrets senere, eller .env fil
 	secret := "secret"
 
-	tokenstring, err := token.SignedString([]byte(secret))
+	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return ""
+		fmt.Errorf("signingString error %w", err)
+		return tokenString
 	}
 
-	return tokenstring
+	return tokenString
 }
